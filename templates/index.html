@@ -1,50 +1,62 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>AI Chatbot</title>
+<title>AI Assistant</title>
 
 <style>
 body {
-  font-family: Arial;
-  background: #f4f6f9;
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #1e3c72, #2a5298);
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
 }
 
 .chat-container {
-  width: 350px;
+  width: 380px;
+  height: 520px;
   background: white;
-  border-radius: 12px;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
   overflow: hidden;
 }
 
 .chat-header {
-  background: #2e7d32;
+  background: #2a5298;
   color: white;
   padding: 15px;
   text-align: center;
+  font-size: 18px;
   font-weight: bold;
 }
 
 .chat-box {
-  height: 300px;
+  flex: 1;
+  padding: 15px;
   overflow-y: auto;
-  padding: 10px;
+}
+
+.message {
+  margin: 10px 0;
+  padding: 10px 14px;
+  border-radius: 15px;
+  max-width: 75%;
 }
 
 .user {
+  background: #2a5298;
+  color: white;
+  margin-left: auto;
   text-align: right;
-  margin: 8px 0;
-  color: blue;
 }
 
 .bot {
-  text-align: left;
-  margin: 8px 0;
-  color: green;
+  background: #f1f1f1;
+  color: #333;
 }
 
 .chat-input {
@@ -54,16 +66,22 @@ body {
 
 .chat-input input {
   flex: 1;
-  padding: 10px;
+  padding: 12px;
   border: none;
+  outline: none;
 }
 
 .chat-input button {
-  background: #2e7d32;
+  background: #2a5298;
   color: white;
   border: none;
-  padding: 10px 15px;
+  padding: 0 20px;
   cursor: pointer;
+  font-weight: bold;
+}
+
+.chat-input button:hover {
+  background: #1e3c72;
 }
 </style>
 </head>
@@ -71,12 +89,12 @@ body {
 <body>
 
 <div class="chat-container">
-  <div class="chat-header">AI Chatbot</div>
+  <div class="chat-header">🤖 AI Assistant</div>
 
   <div id="chatbox" class="chat-box"></div>
 
   <div class="chat-input">
-    <input type="text" id="userInput" placeholder="Type message...">
+    <input type="text" id="userInput" placeholder="Ask something...">
     <button onclick="sendMessage()">Send</button>
   </div>
 </div>
@@ -85,6 +103,11 @@ body {
 function sendMessage() {
   var userText = document.getElementById("userInput").value;
 
+  if(userText.trim() === "") return;
+
+  document.getElementById("chatbox").innerHTML += 
+  "<div class='message user'>" + userText + "</div>";
+
   fetch("/get", {
     method: "POST",
     body: new URLSearchParams({"msg": userText})
@@ -92,8 +115,10 @@ function sendMessage() {
   .then(response => response.text())
   .then(data => {
     document.getElementById("chatbox").innerHTML += 
-    "<div class='user'>You: " + userText + "</div>" +
-    "<div class='bot'>Bot: " + data + "</div>";
+    "<div class='message bot'>" + data + "</div>";
+
+    document.getElementById("chatbox").scrollTop =
+    document.getElementById("chatbox").scrollHeight;
   });
 
   document.getElementById("userInput").value = "";
