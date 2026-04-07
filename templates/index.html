@@ -86,6 +86,10 @@ body {
 .chat-input button:hover {
   background: #2c5364;
 }
+  .message {
+  display: inline-block;
+  line-height: 1.4;
+}
 </style>
 </head>
 
@@ -105,11 +109,19 @@ body {
 <script>
 function sendMessage() {
   var userText = document.getElementById("userInput").value;
-
   if(userText.trim() === "") return;
 
-  document.getElementById("chatbox").innerHTML += 
-  "<div class='message user'>" + userText + "</div>";
+  var chatbox = document.getElementById("chatbox");
+
+  // User message
+  chatbox.innerHTML += 
+  "<div class='message user'>👤 " + userText + "</div>";
+
+  // Typing animation
+  chatbox.innerHTML += 
+  "<div class='message bot' id='typing'>🤖 Typing...</div>";
+
+  chatbox.scrollTop = chatbox.scrollHeight;
 
   fetch("/get", {
     method: "POST",
@@ -117,11 +129,15 @@ function sendMessage() {
   })
   .then(response => response.text())
   .then(data => {
-    document.getElementById("chatbox").innerHTML += 
-    "<div class='message bot'>" + data + "</div>";
 
-    document.getElementById("chatbox").scrollTop =
-    document.getElementById("chatbox").scrollHeight;
+    // Remove typing
+    document.getElementById("typing").remove();
+
+    // Bot response
+    chatbox.innerHTML += 
+    "<div class='message bot'>🤖 " + data + "</div>";
+
+    chatbox.scrollTop = chatbox.scrollHeight;
   });
 
   document.getElementById("userInput").value = "";
